@@ -1,5 +1,5 @@
-Example programs/scripts
-------------------------
+Example programs & scripts
+--------------------------
 
 ### python-small-program
 
