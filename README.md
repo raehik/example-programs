@@ -12,3 +12,9 @@ Good for scripts/programs 100 lines to 1000. Main points:
     are grouped and pointed out)
 
 Not perfect, but highly flexible.
+
+
+### python-script
+
+Good for any script. Logging & arguments already set up. Cut-down version of
+`python-small-program`.
