@@ -4,13 +4,27 @@
 #
 
 import sys, os, argparse, logging
+from raehutils import *
 
 class Program:
+    ## __init_logging, run, exit {{{
     def __init_logging(self):
         self.logger = logging.getLogger(os.path.basename(sys.argv[0]))
         lh = logging.StreamHandler()
         lh.setFormatter(logging.Formatter("%(name)s: %(levelname)s: %(message)s"))
         self.logger.addHandler(lh)
+
+    def run(self):
+        """Run from CLI: parse arguments, run main."""
+        self.__init_logging()
+        self.__parse_args()
+        self.main()
+
+    def exit(self, msg, ret):
+        """Exit with explanation."""
+        self.logger.error(msg)
+        sys.exit(ret)
+    ## }}}
 
     def __parse_args(self):
         self.parser = argparse.ArgumentParser(description="Short description of the program/script's operation/function.")
@@ -25,17 +39,6 @@ class Program:
             self.logger.setLevel(logging.DEBUG)
         if self.args.quiet >= 1:
             self.logger.setLevel(logging.NOTSET)
-
-    def run(self):
-        """Run from CLI: parse arguments, run main."""
-        self.__init_logging()
-        self.__parse_args()
-        self.main()
-
-    def exit(self, msg, ret):
-        """Exit with explanation."""
-        self.logger.error(msg)
-        sys.exit(ret)
 
     def main(self):
         """Main entrypoint after program setup."""

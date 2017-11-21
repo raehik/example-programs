@@ -4,6 +4,7 @@
 #
 
 import sys, os, argparse, subprocess, logging
+from raehutils import *
 
 class Program:
     ## CLI-related {{{
@@ -70,15 +71,6 @@ class Program:
         """Exit with explanation."""
         self.logger.error(msg)
         sys.exit(ret)
-
-    def get_shell(self, args):
-        """Run a shell command and return the exit code."""
-        return subprocess.run(args).returncode
-
-    def run_shell(self, args):
-        if not args:
-            self.exit("run-shell requires >=1 arguments", 4)
-        self.get_shell(args)
 
 if __name__ == "__main__":
     program = Program()
