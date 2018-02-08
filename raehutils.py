@@ -4,30 +4,67 @@
 #
 
 import subprocess
+import time
 
 def get_shell(cmd):
+    """Run a shell command, blocking execution, detaching stdin, stdout and
+    stderr.
+
+    Useful for grabbing shell command outputs, or if you want to run something
+    silently and wait for it to finish.
+
+    @return the command's return code, stdout and stderr (respectively, as a
+            tuple).
+    """
+    proc = subprocess.run(cmd, stdin=subprocess.DEVNULL,
+                               stdout=subprocess.PIPE,
+                               stderr=subprocess.PIPE)
+    return proc.returncode, \
+           proc.stdout.decode("utf-8").strip(), \
+           proc.stderr.decode("utf-8").strip()
+
+def get_shell_with_input(cmd, s):
+    """Run a shell command, blocking execution, detaching stdin, stdout and
+    stderr.
+
+    Takes an argument to use as the string to pass to stdin. Puts a newline on
+    the end, because that appears to be important for some/many programs (bc at
+    least). TODO.
+
+    @return the command's return code, stdout and stderr (respectively, as a
+            tuple).
+    """
+    proc = subprocess.run(cmd, input=bytes("{}\n".format(s), "utf-8"),
+                               stdout=subprocess.PIPE,
+                               stderr=subprocess.PIPE)
+    return proc.returncode, \
+           proc.stdout.decode("utf-8").strip(), \
+           proc.stderr.decode("utf-8").strip()
+
+def drop_to_shell(cmd):
     """Run a shell command, blocking execution.
 
-    Returns the exit code and stdout (respectively, as a tuple).
+    Doesn't touch any pipes. Like dropping to shell during execution.
+
+    @return the command's exit code
     """
-    proc = subprocess.run(cmd, stdout=subprocess.PIPE)
-    return proc.returncode, proc.stdout.decode("utf-8").strip()
+    proc = subprocess.run(cmd)
+    return proc.returncode
 
-def run_shell(cmd):
-    """Run a shell command without blocking execution (return
-    immediately)."""
-    subprocess.Popen(cmd)
-    return True
+def run_shell_detached(cmd):
+    """Run a shell command, not blocking execution (returns immediately),
+    detaching stdin, stdout and stderr.
 
-def run_shell_interactive(cmd):
-    """Run a shell command, blocking execution
+    Not ideal: only seems to properly detach after script exits (otherwise, a
+    Ctrl-C can interrupt it). See this SE question (tl;dr deal with signals, or
+    daemonise): https://stackoverflow.com/questions/37058013
 
-    Doesn't touch stdout. Like dropping to shell during execution.
-
-    Returns the exit code.
+    Will generally be fine in cases when the script ends very soon after this
+    function is called.
     """
-    cmd = subprocess.run(cmd)
-    return cmd.returncode
+    subprocess.Popen(cmd, stdin=subprocess.DEVNULL,
+                          stdout=subprocess.DEVNULL,
+                          stderr=subprocess.DEVNULL)
 
 def yn_prompt(prompt):
     """Prompt the user with a yes/no question.
