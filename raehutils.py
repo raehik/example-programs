@@ -1,10 +1,52 @@
 #!/usr/bin/env python
 #
 # Common functions and behaviour that raehik uses, cleaned up and placed in a
-# standalone package.
+# standalone module.
 #
 
-import subprocess
+import sys, os, logging, subprocess
+
+class RaehBaseClass:
+    def _deinit(self):
+        self.logger.debug("deinitialising...")
+
+    ## CLI-related {{{
+    def _init_logging(self):
+        self.logger = logging.getLogger(os.path.basename(sys.argv[0]))
+        lh = logging.StreamHandler()
+        lh.setFormatter(logging.Formatter("%(name)s: %(levelname)s: %(message)s"))
+        self.logger.addHandler(lh)
+
+    def _parse_verbosity(self):
+        if self.args.verbose == 1:
+            self.logger.setLevel(logging.INFO)
+        elif self.args.verbose >= 2:
+            self.logger.setLevel(logging.DEBUG)
+        if self.args.quiet >= 1:
+            # reset verbosity (to make verbose/quiet checks easier)
+            self.args.verbose = 0
+            self.logger.setLevel(logging.NOTSET)
+
+    def run(self):
+        """Run from CLI: parse arguments, run main, deinitialise."""
+        self._init_logging()
+        self._parse_args()
+        self.main()
+        self._deinit()
+    ## }}}
+
+    def fail(self, msg, ret):
+        """Exit with a message and a return code.
+
+        Should only be used for errors -- if you want to deinitialise and exit
+        safely, simply return from main.
+        """
+        self.logger.error(msg)
+        self.logger.debug("deinitialising...")
+        self._deinit()
+        sys.exit(ret)
+
+# ------------
 
 def get_shell(cmd, cwd=None):
     """Run a shell command, blocking execution, detaching stdin, stdout and
