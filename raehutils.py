@@ -35,23 +35,19 @@ class RaehBaseClass:
         self._deinit()
     ## }}}
 
-    def fail(self, msg, ret):
+    def fail(self, msg="internal error", ret=1):
         """Exit with a message and a return code.
 
         Should only be used for errors -- if you want to deinitialise and exit
         safely, simply return from main.
+
+        Suggested to use no parameters for internal functions that the user
+        doesn't need to know about (which generally indicates a logic error,
+        rather than an input one.)
         """
         self.logger.error(msg)
         self._deinit()
         sys.exit(ret)
-
-    def fail(self):
-        """Exit with a generic message and return code.
-
-        Should be used for internal functions that the user doesn't need to know
-        about. Generally indicates a logic error, rather than an input one.
-        """
-        self.fail("internal error", 1)
 
 # ------------
 
