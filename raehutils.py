@@ -52,7 +52,7 @@ def drop_to_shell(cmd, cwd=None):
 
     Doesn't touch any pipes. Like dropping to shell during execution.
 
-    @param cmd    command to run as an array, where each element is an argument
+    @param cmd command to run as an array, where each element is an argument
     @param cwd if present, directory to use as CWD
     @return the command's exit code
     """
