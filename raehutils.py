@@ -1,57 +1,64 @@
 #!/usr/bin/env python
 #
-# Short description of the program/script's operation/function.
+# Common functions and behaviour that raehik uses, cleaned up and placed in a
+# standalone package.
 #
 
 import subprocess
-import time
 
-def get_shell(cmd):
+def get_shell(cmd, cwd=None):
     """Run a shell command, blocking execution, detaching stdin, stdout and
     stderr.
 
     Useful for grabbing shell command outputs, or if you want to run something
     silently and wait for it to finish.
 
+    @param cmd command to run as an array, where each element is an argument
+    @param cwd if present, directory to use as CWD
     @return the command's return code, stdout and stderr (respectively, as a
-            tuple).
+            tuple)
     """
     proc = subprocess.run(cmd, stdin=subprocess.DEVNULL,
                                stdout=subprocess.PIPE,
-                               stderr=subprocess.PIPE)
+                               stderr=subprocess.PIPE,
+                               cwd=cwd)
     return proc.returncode, \
            proc.stdout.decode("utf-8").strip(), \
            proc.stderr.decode("utf-8").strip()
 
-def get_shell_with_input(cmd, s):
-    """Run a shell command, blocking execution, detaching stdin, stdout and
-    stderr.
+def get_shell_with_input(cmd, stdin_in, cwd=None):
+    """Run a shell command with a given string passed to stdin, blocking
+    execution and detaching stdout and stderr.
 
-    Takes an argument to use as the string to pass to stdin. Puts a newline on
-    the end, because that appears to be important for some/many programs (bc at
-    least). TODO.
+    We put a newline on the end of stdin_in, because that appears to be important for
+    some programs (e.g. bc). TODO though, unsure. Maybe should be an option.
 
+    @param cmd    command to run as an array, where each element is an argument
+    @param std_in string to pass to stdin
+    @param cwd    if present, directory to use as CWD
     @return the command's return code, stdout and stderr (respectively, as a
-            tuple).
+            tuple)
     """
-    proc = subprocess.run(cmd, input=bytes("{}\n".format(s), "utf-8"),
+    proc = subprocess.run(cmd, input=bytes("{}\n".format(stdin_in), "utf-8"),
                                stdout=subprocess.PIPE,
-                               stderr=subprocess.PIPE)
+                               stderr=subprocess.PIPE,
+                               cwd=cwd)
     return proc.returncode, \
            proc.stdout.decode("utf-8").strip(), \
            proc.stderr.decode("utf-8").strip()
 
-def drop_to_shell(cmd):
+def drop_to_shell(cmd, cwd=None):
     """Run a shell command, blocking execution.
 
     Doesn't touch any pipes. Like dropping to shell during execution.
 
+    @param cmd    command to run as an array, where each element is an argument
+    @param cwd if present, directory to use as CWD
     @return the command's exit code
     """
-    proc = subprocess.run(cmd)
-    return proc.returncode
+    return subprocess.run(cmd, cwd=cwd).returncode
 
-def run_shell_detached(cmd):
+def run_shell_detached(cmd, cwd=None):
     """Run a shell command, not blocking execution (returns immediately),
     detaching stdin, stdout and stderr.
 
@@ -61,10 +68,14 @@ def run_shell_detached(cmd):
 
     Will generally be fine in cases when the script ends very soon after this
     function is called.
+
+    @param cmd command to run as an array, where each element is an argument
+    @param cwd if present, directory to use as CWD
     """
     subprocess.Popen(cmd, stdin=subprocess.DEVNULL,
                           stdout=subprocess.DEVNULL,
-                          stderr=subprocess.DEVNULL)
+                          stderr=subprocess.DEVNULL,
+                          cwd=cwd)
 
 def yn_prompt(prompt):
     """Prompt the user with a yes/no question.
