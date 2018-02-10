@@ -45,6 +45,14 @@ class RaehBaseClass:
         self._deinit()
         sys.exit(ret)
 
+    def fail(self):
+        """Exit with a generic message and return code.
+
+        Should be used for internal functions that the user doesn't need to know
+        about. Generally indicates a logic error, rather than an input one.
+        """
+        self.fail("internal error", 1)
+
 # ------------
 
 def get_shell(cmd, cwd=None):
