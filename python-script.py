@@ -4,27 +4,20 @@
 #
 
 import sys, os, argparse, logging
-from raehutils import *
+import raehutils
 
 class Program:
-    ## __init_logging, run, exit {{{
+    def __init__(self):
+        pass
+    def __deinit(self):
+        self.logger.debug("deinitialising...")
+
+    ## CLI-related {{{
     def __init_logging(self):
         self.logger = logging.getLogger(os.path.basename(sys.argv[0]))
         lh = logging.StreamHandler()
         lh.setFormatter(logging.Formatter("%(name)s: %(levelname)s: %(message)s"))
         self.logger.addHandler(lh)
-
-    def run(self):
-        """Run from CLI: parse arguments, run main."""
-        self.__init_logging()
-        self.__parse_args()
-        self.main()
-
-    def exit(self, msg, ret):
-        """Exit with explanation."""
-        self.logger.error(msg)
-        sys.exit(ret)
-    ## }}}
 
     def __parse_args(self):
         self.parser = argparse.ArgumentParser(description="Short description of the program/script's operation/function.")
@@ -38,10 +31,31 @@ class Program:
         elif self.args.verbose >= 2:
             self.logger.setLevel(logging.DEBUG)
         if self.args.quiet >= 1:
+            # reset verbosity (to make verbose/quiet checks easier)
+            self.args.verbose = 0
             self.logger.setLevel(logging.NOTSET)
 
+    def run(self):
+        """Run from CLI: parse arguments, run main, deinitialise."""
+        self.__init_logging()
+        self.__parse_args()
+        self.main()
+        self.__deinit()
+    ## }}}
+
+    def fail(self, msg, ret):
+        """Exit with a message and a return code.
+
+        Should only be used for errors -- if you want to deinitialise and exit
+        safely, simply return from main.
+        """
+        self.logger.error(msg)
+        self.logger.debug("deinitialising...")
+        self.__deinit()
+        sys.exit(ret)
+
     def main(self):
-        """Main entrypoint after program setup."""
+        """Main entrypoint after program initialisation."""
         return True
 
 if __name__ == "__main__":
