@@ -42,7 +42,6 @@ class RaehBaseClass:
         safely, simply return from main.
         """
         self.logger.error(msg)
-        self.logger.debug("deinitialising...")
         self._deinit()
         sys.exit(ret)
 
