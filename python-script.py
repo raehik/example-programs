@@ -22,7 +22,7 @@ class Program(raehutils.RaehBaseClass):
 
         self.args = self.parser.parse_args()
 
-        self.args.verbose += 1 # force some verbosity
+        #self.args.verbose += 1 # force some verbosity
         self._parse_verbosity()
     ## }}}
 
