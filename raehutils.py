@@ -68,8 +68,8 @@ def get_shell(cmd, cwd=None):
                                stderr=subprocess.PIPE,
                                cwd=cwd)
     return proc.returncode, \
-           proc.stdout.decode("utf-8").strip(), \
-           proc.stderr.decode("utf-8").strip()
+           proc.stdout.decode("utf-8", "replace").strip(), \
+           proc.stderr.decode("utf-8", "replace").strip()
 
 def get_shell_with_input(cmd, stdin_in, cwd=None):
     """Run a shell command with a given string passed to stdin, blocking
@@ -89,8 +89,8 @@ def get_shell_with_input(cmd, stdin_in, cwd=None):
                                stderr=subprocess.PIPE,
                                cwd=cwd)
     return proc.returncode, \
-           proc.stdout.decode("utf-8").strip(), \
-           proc.stderr.decode("utf-8").strip()
+           proc.stdout.decode("utf-8", "replace").strip(), \
+           proc.stderr.decode("utf-8", "replace").strip()
 
 def drop_to_shell(cmd, cwd=None):
     """Run a shell command, blocking execution.
